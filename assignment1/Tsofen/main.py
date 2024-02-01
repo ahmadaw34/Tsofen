@@ -1,11 +1,21 @@
+import json
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
 
+def compareJson(name):
+    filePath = name
+    with open(filePath, 'r', encoding='utf-8') as json_file:
+        data = json.load(json_file)
+    source = data['source']
+    target = data['target']
+    for app in source:
+        try:
+            if source[app] != target[app]:
+                return False
+        except Exception as e:
+            print(f"Error: {e}")
+            return False
+    return True
 
 
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    print(compareJson('json_file.json'))
