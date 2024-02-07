@@ -1,30 +1,25 @@
 import json
+import os
 
 
-def compareJson(name):
+def compareVersions(name):
     try:
-        filePath = name
+        filePath = os.path.abspath(name)
         with open(filePath, 'r', encoding='utf-8') as json_file:
             data = json.load(json_file)
-        source = data['source']
-        target = data['target']
-        if (source["smart_apps_stack_version"]!=target["smart_apps_stack_version"] or
-            source["remedy_stack_version"] != target["remedy_stack_version"] or
-            source["remedy_apps_stack_version"] != target["remedy_apps_stack_version"] or
-            source["smart_reporting_stack_version"] != target["smart_reporting_stack_version"]):
-            return False
-        return True
+        source = None
+        for d in data:
+            if source is None:
+                source = d
+            else:
+                for app in data[source]:
+                    if app.find("version") != -1 and data[source][app] != data[d][app]:
+                        return False
     except Exception as e:
         print(f"Error: {e}")
-    # for app in source:
-    #     try:
-    #         if source[app] != target[app]:
-    #             return False
-    #     except Exception as e:
-    #         print(f"Error: {e}")
-    #         return False
-    # return True
+        return False
+    return True
 
 
 if __name__ == '__main__':
-    print(compareJson('json_file.json'))
+    print(compareVersions('json_file.json'))
