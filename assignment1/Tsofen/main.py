@@ -1,7 +1,6 @@
 import json
 import os
 
-
 def compareVersions(name):
     try:
         filePath = os.path.abspath(name)
