@@ -1,9 +1,13 @@
 import json
 import os
 
+
 def compareVersions(name):
     try:
-        filePath = os.path.abspath(name)
+        filePath = os.getcwd()  # get current directory
+        for root, dirs, files in os.walk(filePath):  # start walking toward from the current directory to find the file
+            if name in files:
+                filePath = os.path.join(root, name)
         with open(filePath, 'r', encoding='utf-8') as json_file:
             data = json.load(json_file)
         source = None
