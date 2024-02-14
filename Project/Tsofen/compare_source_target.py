@@ -5,13 +5,12 @@ import enums
 class compare_source_target:
     def prerequisite(self):
         return
-    def Run(self,name):
-        return self.run_compare_process(name)
+    def Run(self,fileName):
+        return self.run_compare_process(fileName)
     def run_compare_process(self,fileName):
         try:
             filePath = os.getcwd()  # get current directory
-            for root, dirs, files in os.walk(
-                    filePath):  # start walking toward from the current directory to find the file
+            for root, dirs, files in os.walk(filePath):  # start walking toward from the current directory to find the file
                 if fileName in files:
                     filePath = os.path.join(root, fileName)
             with open(filePath, 'r', encoding='utf-8') as json_file:
