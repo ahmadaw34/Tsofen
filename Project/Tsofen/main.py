@@ -1,5 +1,5 @@
-from compare_source_target import compare_source_target
+from compare_source_target import CompareSourceTarget
 
 if __name__ == '__main__':
-    CompareClass=compare_source_target()
-    print(CompareClass.Run('json_file.json'))
+    CompareClass = CompareSourceTarget()
+    print(CompareClass.run('json_file.json'))
