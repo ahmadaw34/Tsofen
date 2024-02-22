@@ -1,6 +1,9 @@
 import json
 import os
 from enums import Status
+import re
+import logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 class CompareSourceTarget:
@@ -9,11 +12,26 @@ class CompareSourceTarget:
         self.file_name = None
 
     def prerequisite(self):
-        pass
+        try:
+            version_format = r'^\d{2,}\.\d{2}\.\d{2,}$'
+            data = self.__load_json_file()
+            for d in data:
+                for app in data[d]:
+                    if app.find('version') != -1 and not re.match(version_format, data[d][app]):
+                        raise ValueError(data[d][app] + ' doesnt match the expected version format')
+            logging.debug(f"prerequisite: Success")
+            return Status.Success.value
+        except Exception as e:
+            logging.error(f"prerequisite: {e}")
 
     def run(self, file_name: str = "json_file.json"):
         self.file_name = file_name
-        return self.__run_compare_process()
+        if self.prerequisite() == Status.Success.value and self.__run_compare_process() == Status.Success.value:
+            logging.debug(f"run: Success")
+            return Status.Success.value
+        else:
+            logging.error(f"run: Failure")
+            return Status.Failure.value
 
     def __run_compare_process(self):
         try:
@@ -25,10 +43,12 @@ class CompareSourceTarget:
                 else:
                     for app in data[source]:
                         if app.find("version") != -1 and data[source][app] != data[d][app]:
+                            logging.error(f"__run_compare_process: {source}:{app}:{data[source][app]} != {d}:{app}:{data[d][app]}")
                             return Status.Failure.value
         except Exception as e:
-            print(f"Error: {e}")
+            logging.error(f"__run_compare_process: {e}")
             return Status.Failure.value
+        logging.debug(f"__run_compare_process: Success")
         return Status.Success.value
 
     def __load_json_file(self):
