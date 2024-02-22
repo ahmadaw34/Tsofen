@@ -11,7 +11,7 @@ class CompareSourceTarget:
     def __init__(self):
         self.file_name = None
 
-    def prerequisite(self):
+    def __prerequisite(self):
         try:
             version_format = r'^\d{2,}\.\d{2}\.\d{2,}$'
             data = self.__load_json_file()
@@ -26,7 +26,7 @@ class CompareSourceTarget:
 
     def run(self, file_name: str = "json_file.json"):
         self.file_name = file_name
-        if self.prerequisite() == Status.Success.value and self.__run_compare_process() == Status.Success.value:
+        if self.__prerequisite() == Status.Success.value and self.__run_compare_process() == Status.Success.value:
             logging.debug(f"run: Success")
             return Status.Success.value
         else:
