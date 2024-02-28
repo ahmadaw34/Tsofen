@@ -1,5 +1,10 @@
 from compare_source_target import CompareSourceTarget
 
 if __name__ == '__main__':
-    CompareClass = CompareSourceTarget()
-    print(CompareClass.run('json_file.json'))
+    try:
+        CompareClass = CompareSourceTarget()
+        print(CompareClass.run('json_file.json'))
+        exit(0)
+    except Exception as e:
+        print(f"proccess failed with the following error: {e}")
+        exit(1)
