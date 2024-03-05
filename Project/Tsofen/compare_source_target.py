@@ -1,63 +1,65 @@
-import json
-import os
-from enums import Status
-import re
-import logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
+from Job import *
 
 
-class CompareSourceTarget:
+class CompareSourceTarget(Job):
 
     def __init__(self):
-        self.file_name = None
-        self.__data=None
-
-    def run(self, file_name: str = "json_file.json"):
+        """
+        constructor
+        """
+        super().__init__()
+        self.__version_file_name = None
+    def run(self, email_addresses, version_file_name: str = "json_file.json",email_file_name: str = "YAML.json"):
         """
         this function is the entering point of the job.
         """
-        self.file_name = file_name
-        self.__prerequisite()
+        self._email_addresses=email_addresses
+        self.__version_file_name = version_file_name
+        self._email_file_name=email_file_name
+        super()._prerequisite()
+        self._prerequisite()
         return self.__run_compare_process()
 
-    def __prerequisite(self):
+    def _prerequisite(self):
+        """
+        check versions format *.nn.*
+        """
         try:
             version_format = r'^\d{2,}\.\d{2}\.\d{2,}$'
-            self.__data = self.__load_json_file()
-            for d in self.__data:
-                for app in self.__data[d]:
-                    if app.find('version') != -1 and not re.match(version_format, self.__data[d][app]):
-                        raise ValueError(self.__data[d][app] + ' doesnt match the expected version format')
-            logging.debug(f"prerequisite: Success")
+            self._data = self._load_json_file(self.__version_file_name)
+            for d in self._data:
+                for app in self._data[d]:
+                    if app.find('version') != -1 and not re.match(version_format, self._data[d][app]):
+                        self.send_email(Status.Failure.value, True)
+                        raise ValueError(self._data[d][app] + ' doesnt match the expected version format')
+            logging.debug(f"CompareSourceTarget.prerequisite: Success")
         except Exception as e:
-            logging.error(f"prerequisite: {e}")
+            logging.error(f"CompareSourceTarget.prerequisite: {e}")
             raise Exception(e)
 
     def __run_compare_process(self):
+        """
+        compare between app's versions
+        """
         try:
             source = None
-            for d in self.__data:
+            for d in self._data:
                 if source is None:
                     source = d
                 else:
-                    for app in self.__data[source]:
-                        if app.find("version") != -1 and self.__data[source][app] != self.__data[d][app]:
-                            logging.error(f"__run_compare_process: {source}:{app}:{self.__data[source][app]} != {d}:{app}:{self.__data[d][app]}")
+                    for app in self._data[source]:
+                        if app.find("version") != -1 and self._data[source][app] != self._data[d][app]:
+                            logging.error(f"__run_compare_process: {source}:{app}:{self._data[source][app]} != {d}:{app}:{self._data[d][app]}")
+                            self.send_email(Status.Failure.value, True)
                             return Status.Failure.value
         except Exception as e:
             logging.error(f"__run_compare_process: {e}")
+            self.send_email(Status.Failure.value, True)
             return Status.Failure.value
         logging.debug(f"__run_compare_process: Success")
+        self.send_email(Status.Success.value,True)
         return Status.Success.value
-    
-    def __load_json_file(self):
-        file_path = os.getcwd()  # get current directory
-        for root, dirs, files in os.walk(
-                file_path):  # start walking toward from the current directory to find the file
-            if self.file_name in files:
-                file_path = os.path.join(root, self.file_name)
-        with open(file_path, 'r', encoding='utf-8') as json_file:
-            return json.load(json_file)
 
-    def send_email(self):
-        pass
+    def send_email(self,status:enums.Status=Status.Failure.value,send_email:bool=False):
+        self._send_summarization_email(status,send_email)
