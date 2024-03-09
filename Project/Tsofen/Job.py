@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 class Job:
     def __init__(self,email_addresses):
         """
-        constructor
+        Constructor for Job class to initialize and define variables.
         """
         self._email_addresses=email_addresses
         self.__valid_emails=[]

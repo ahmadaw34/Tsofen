@@ -6,7 +6,8 @@ class CompareSourceTarget(Job):
 
     def __init__(self,email_addresses, version_file_name: str = "json_file.json",send_email:bool=False):
         """
-        constructor
+        Constructor for CompareSourceTarget class to initialize and define variables.
+        @param: email_addresses (email addresses of the recipients)
         """
         super().__init__(email_addresses=email_addresses)
         self.send_email=send_email
