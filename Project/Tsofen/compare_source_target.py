@@ -4,20 +4,17 @@ from Job import *
 
 class CompareSourceTarget(Job):
 
-    def __init__(self):
+    def __init__(self,email_addresses, version_file_name: str = "json_file.json"):
         """
         constructor
         """
-        super().__init__()
-        self.__version_file_name = None
-    def run(self, email_addresses, version_file_name: str = "json_file.json",email_file_name: str = "YAML.json"):
+        super().__init__(email_addresses=email_addresses)
+        self.__version_file_name = version_file_name
+
+    def run(self):
         """
         this function is the entering point of the job.
         """
-        self._email_addresses=email_addresses
-        self.__version_file_name = version_file_name
-        self._email_file_name=email_file_name
-        super()._prerequisite()
         self._prerequisite()
         return self.__run_compare_process()
 
@@ -25,6 +22,8 @@ class CompareSourceTarget(Job):
         """
         check versions format *.nn.*
         """
+        super()._prerequisite()
+
         try:
             version_format = r'^\d{2,}\.\d{2}\.\d{2,}$'
             self._data = self._load_json_file(self.__version_file_name)

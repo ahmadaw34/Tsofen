@@ -12,36 +12,41 @@ import logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class Job:
-    def __init__(self):
+    def __init__(self,_email_addresses):
         """
         constructor
         """
-        self._email_addresses=None
+        self._email_addresses=_email_addresses
         self.__valid_emails=[]
         self.__invalid_emails = []
-        self._email_file_name=None
-        self._data = None
+        self.__domains_json='Domains.json'
+        self.__domains_dict = None
         self.__email_sender='awawdy.ahmad@gmail.com'
         self.__password = 'sbgg wwwp ovft chsc'
+
     def _prerequisite(self):
         """
         check emails validation
         """
         try:
             email_address_format = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-            self._data=self._load_json_file(self._email_file_name)
-            list_domains=self._data["domains"]
             email_addresses_list=str(self._email_addresses).split(',')
+
+            self.__domains_dict=self._load_json_file(file_name=self.__domains_json)
+            list_domains=self.__domains_dict["domains"]
+
             for addr in email_addresses_list:
-                if re.match(email_address_format,addr):
-                    if addr[addr.find('@'):] in list_domains:
-                        self.__valid_emails.append(addr)
-                    else:
-                        self.__invalid_emails.append(addr)
+                if re.match(email_address_format,addr) and addr[addr.find('@'):] in list_domains:
+                    self.__valid_emails.append(addr)
                 else:
+                    self.__invalid_emails.append(addr)
                     logging.warning(f'Job._prerequisite: {addr} is invalid email format')
+
+            if not self.__valid_emails:
+                logging.error("no valid emails were found")
+                raise ValueError('no valid emails were found')
         except Exception as e:
-            raise Exception(e)
+            raise Exception(f'Job._prerequisite: email validation failed with the following error: {e}')
 
     def _send_summarization_email(self,status,send_email):
         """
@@ -53,25 +58,20 @@ class Job:
                     body = "The comparison has succeeded"
                 else:
                     body = "The comparison has failed"
-                if len(self.__valid_emails) == 0 and len(self.__invalid_emails) == 0:
-                    logging.error("there is no emails to send to")
-                    raise ValueError("there is no emails to send to")
+
                 message = MIMEMultipart()
                 message['From'] = self.__email_sender
-                emails=self.__valid_emails+self.__invalid_emails
-                message['To'] = ', '.join(emails)
-                message['Subject'] = 'ComparingVersions'
+                message['To'] = ', '.join(self.__valid_emails)
+                message['Subject'] = 'Comparing Versions'
                 message.attach(MIMEText(body, 'plain'))
                 server = smtplib.SMTP('smtp.gmail.com', 587)
                 server.starttls()
                 server.login(self.__email_sender, self.__password)
                 server.send_message(message)
                 server.quit()
-                for invalid in self.__invalid_emails:
-                    logging.warning(f'email sent to invalid email ({invalid})')
-                logging.debug(f'email send successfully')
+                logging.info('email was sent successfully')
         except Exception as e:
-            raise Exception(e)
+            raise Exception(f'there was an error in sending email with the following error: {e}')
 
 
     def _load_json_file(self,file_name):
