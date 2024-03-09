@@ -1,3 +1,4 @@
+from enum import Enum
 import json
 import os
 import re
@@ -12,17 +13,17 @@ import logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class Job:
-    def __init__(self,_email_addresses):
+    def __init__(self,email_addresses):
         """
         constructor
         """
-        self._email_addresses=_email_addresses
+        self._email_addresses=email_addresses
         self.__valid_emails=[]
         self.__invalid_emails = []
         self.__domains_json='Domains.json'
         self.__domains_dict = None
         self.__email_sender='awawdy.ahmad@gmail.com'
-        self.__password = 'sbgg wwwp ovft chsc'
+        self.__password = 'sbgg wwwp ovft chsc' #this password will be hidden in the future
 
     def _prerequisite(self):
         """
@@ -48,28 +49,26 @@ class Job:
         except Exception as e:
             raise Exception(f'Job._prerequisite: email validation failed with the following error: {e}')
 
-    def _send_summarization_email(self,status,send_email):
+    def _send_summarization_email(self,status):
         """
         send emails to valid addresses
         """
         try:
-            if send_email:
-                if status is Status.Success.value:
-                    body = "The comparison has succeeded"
-                else:
-                    body = "The comparison has failed"
-
-                message = MIMEMultipart()
-                message['From'] = self.__email_sender
-                message['To'] = ', '.join(self.__valid_emails)
-                message['Subject'] = 'Comparing Versions'
-                message.attach(MIMEText(body, 'plain'))
-                server = smtplib.SMTP('smtp.gmail.com', 587)
-                server.starttls()
-                server.login(self.__email_sender, self.__password)
-                server.send_message(message)
-                server.quit()
-                logging.info('email was sent successfully')
+            if status is Status.Success:
+                body = "The comparison has succeeded"
+            else:
+                body = "The comparison has failed"
+            message = MIMEMultipart()
+            message['From'] = self.__email_sender
+            message['To'] = ', '.join(self.__valid_emails)
+            message['Subject'] = 'Comparing Versions'
+            message.attach(MIMEText(body, 'plain'))
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.starttls()
+            server.login(self.__email_sender, self.__password)
+            server.send_message(message)
+            server.quit()
+            logging.info(f'email was sent successfully to {self.__valid_emails}')
         except Exception as e:
             raise Exception(f'there was an error in sending email with the following error: {e}')
 

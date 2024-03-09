@@ -4,11 +4,12 @@ from Job import *
 
 class CompareSourceTarget(Job):
 
-    def __init__(self,email_addresses, version_file_name: str = "json_file.json"):
+    def __init__(self,email_addresses, version_file_name: str = "json_file.json",send_email:bool=False):
         """
         constructor
         """
         super().__init__(email_addresses=email_addresses)
+        self.send_email=send_email
         self.__version_file_name = version_file_name
 
     def run(self):
@@ -29,13 +30,13 @@ class CompareSourceTarget(Job):
             self._data = self._load_json_file(self.__version_file_name)
             for d in self._data:
                 for app in self._data[d]:
-                    if app.find('version') != -1 and not re.match(version_format, self._data[d][app]):
-                        self.send_email(Status.Failure.value, True)
+                    if app.find('version') != -1 and not re.match(version_format, self._data[d][app]) and self.send_email:
+                        self.send_email_to_user(status=Status.Failure)
                         raise ValueError(self._data[d][app] + ' doesnt match the expected version format')
-            logging.debug(f"CompareSourceTarget.prerequisite: Success")
+            logging.info("CompareSourceTarget.prerequisite: Success")
         except Exception as e:
-            logging.error(f"CompareSourceTarget.prerequisite: {e}")
-            raise Exception(e)
+            logging.error(f"CompareSourceTarget.prerequisite: _prerequisite failed with the following error: {e}")
+            raise Exception(f"CompareSourceTarget.prerequisite: _prerequisite failed with the following error: {e}")
 
     def __run_compare_process(self):
         """
@@ -50,15 +51,15 @@ class CompareSourceTarget(Job):
                     for app in self._data[source]:
                         if app.find("version") != -1 and self._data[source][app] != self._data[d][app]:
                             logging.error(f"__run_compare_process: {source}:{app}:{self._data[source][app]} != {d}:{app}:{self._data[d][app]}")
-                            self.send_email(Status.Failure.value, True)
+                            self.send_email_to_user(Status.Failure)
                             return Status.Failure.value
         except Exception as e:
-            logging.error(f"__run_compare_process: {e}")
-            self.send_email(Status.Failure.value, True)
+            logging.error(f"__run_compare_process: comparing failed with the following error: {e}")
             return Status.Failure.value
-        logging.debug(f"__run_compare_process: Success")
-        self.send_email(Status.Success.value,True)
+        
+        logging.info("__run_compare_process: Success")
+        self.send_email_to_user(Status.Success)
         return Status.Success.value
 
-    def send_email(self,status:enums.Status=Status.Failure.value,send_email:bool=False):
-        self._send_summarization_email(status,send_email)
+    def send_email_to_user(self,status):
+        self._send_summarization_email(status=status)
