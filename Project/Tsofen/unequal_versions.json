@@ -1,0 +1,34 @@
+{
+    "source": {
+      "project_name": "southernco-prod",
+      "project_service_name": "southernco",
+      "project_cluster": "lon1-oke-cppd-01",
+      "environment_type": "prod",
+      "remedy_stack_version": "44.11.251",
+      "remedy_stack_components": "1atriumwebsvc,midtier,platform,smartreporting",
+      "remedy_apps_stack_version": "01.01.21",
+      "remedy_apps_stack_components": "smartit,tsomplugin,virtualchatplugin9,virtualchatserver",
+      "smart_apps_stack_version": "122.05.24",
+      "smart_apps_stack_components": "mcsm,bwf,dwp,dwpc,itsm-insights",
+      "has_sr_stack": "Yes",
+      "has_sr": "Yes",
+      "smart_reporting_stack_version": "21.05.24",
+      "smart_reporting_stack_components": "dwpc,dwp"
+    },
+    "target": {
+      "project_name": "southernco-prod",
+      "project_service_name": "southernco",
+      "project_cluster": "lon1-oke-cppd-01",
+      "environment_type": "prod",
+      "remedy_stack_version": "44.11.221",
+      "remedy_stack_components": "1atriumwebsvc,midtier,platform,smartreporting",
+      "remedy_apps_stack_version": "01.01.21",
+      "remedy_apps_stack_components": "smartit,tsomplugin,virtualchatplugin,virtualchatserver",
+      "smart_apps_stack_version": "122.05.24",
+      "smart_apps_stack_components": "bwf,dwp,dwpc,itsm-insights,mcsm",
+      "has_sr_stack": "Yes",
+      "has_sr": "Yes",
+      "smart_reporting_stack_version": "21.05.24",
+      "smart_reporting_stack_components": "dwp,dwpc"
+    }
+  }
