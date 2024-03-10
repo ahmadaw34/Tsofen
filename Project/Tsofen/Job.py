@@ -13,9 +13,15 @@ import logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class Job:
+    """
+    This is a parent class which will be responsible for initializing logger, validation and sending email.
+    """
+
     def __init__(self,email_addresses):
         """
         Constructor for Job class to initialize and define variables.
+        :param email_addresses: A list of recipients' email addresses that should receive the job status updates.
+                                Sent from child class.
         """
         self._email_addresses=email_addresses
         self.__valid_emails=[]
@@ -27,7 +33,8 @@ class Job:
 
     def _prerequisite(self):
         """
-        check emails validation
+        This function will check and validate email addresses. 
+        It reads a JSON file that contains valid domains, and filter out invalid domain email addresses.
         """
         try:
             email_address_format = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
@@ -44,20 +51,21 @@ class Job:
                     logging.warning(f'Job._prerequisite: {addr} is invalid email format')
 
             if not self.__valid_emails:
-                logging.error("no valid emails were found")
-                raise ValueError('no valid emails were found')
+                logging.error("No valid emails were found.")
+                raise ValueError('No valid emails were found.')
         except Exception as e:
-            raise Exception(f'Job._prerequisite: email validation failed with the following error: {e}')
+            raise Exception(f'Job._prerequisite: Email validation failed with the following error: {e}')
 
-    def _send_summarization_email(self,status):
+    def _send_summarization_email(self,status:Enum):
         """
-        send emails to valid addresses
+        This function is responsible for sending emails to valid addresses.
+        @param status : Enum showing whether the job was successful or not.
         """
         try:
             if status is Status.Success:
-                body = "The comparison has succeeded"
+                body = "Comparing versions process has succeeded."
             else:
-                body = "The comparison has failed"
+                body = "Comparing versions process has failed."
             message = MIMEMultipart()
             message['From'] = self.__email_sender
             message['To'] = ', '.join(self.__valid_emails)
@@ -68,14 +76,15 @@ class Job:
             server.login(self.__email_sender, self.__password)
             server.send_message(message)
             server.quit()
-            logging.info(f'email was sent successfully to {self.__valid_emails}')
+            logging.info(f'Email was sent successfully to: [{self.__valid_emails}]')
         except Exception as e:
-            raise Exception(f'there was an error in sending email with the following error: {e}')
+            raise Exception(f"An error occured while sending email with the following exception: [{e}]")
 
 
     def _load_json_file(self,file_name):
         """
-        loads json file
+        This function will loads json files, load it's content to  a dictionary object and return this dictionary.
+        @param file_name: str - name of json file
         """
         file_path = os.getcwd()  # get current directory
         for root, dirs, files in os.walk(

@@ -3,26 +3,34 @@ from Job import *
 
 
 class CompareSourceTarget(Job):
+    """
+    This class is responsible for comparing  the source and target versions in json file. 
+    """
 
     def __init__(self,email_addresses, version_file_name: str = "json_file.json",send_email:bool=False):
         """
         Constructor for CompareSourceTarget class to initialize and define variables.
+
         @param: email_addresses (email addresses of the recipients)
+        @param: version_file_name (optional - name of the file that contains the source and target versions). 
+                Default is "json_file.json"
+        @send_email: bool - whether to send summarization email or not. Default is false.
         """
+        
         super().__init__(email_addresses=email_addresses)
         self.send_email=send_email
         self.__version_file_name = version_file_name
 
     def run(self):
         """
-        this function is the entering point of the job.
+        This function is the entering point of the job.
         """
         self._prerequisite()
         return self.__run_compare_process()
 
     def _prerequisite(self):
         """
-        check versions format *.nn.*
+        This function will check versions format *.nn.* and validate.
         """
         super()._prerequisite()
 
@@ -39,9 +47,9 @@ class CompareSourceTarget(Job):
             logging.error(f"CompareSourceTarget.prerequisite: _prerequisite failed with the following error: {e}")
             raise Exception(f"CompareSourceTarget.prerequisite: _prerequisite failed with the following error: {e}")
 
-    def __run_compare_process(self):
+    def __run_compare_process(self) -> Enum:
         """
-        compare between app's versions
+        This function will compare between app's versions.
         """
         try:
             source = None
@@ -55,10 +63,10 @@ class CompareSourceTarget(Job):
                             self.send_email_to_user(Status.Failure)
                             return Status.Failure.value
         except Exception as e:
-            logging.error(f"__run_compare_process: comparing failed with the following error: {e}")
+            logging.error(f"__run_compare_process: comparing failed with the following error: [{e}]")
             return Status.Failure.value
         
-        logging.info("__run_compare_process: Success")
+        logging.info("__run_compare_process: process completed with success, versions are identical.")
         self.send_email_to_user(Status.Success)
         return Status.Success.value
 
