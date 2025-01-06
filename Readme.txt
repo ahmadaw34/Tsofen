@@ -39,7 +39,8 @@ This project is designed to compare source and target versions of software compo
 ## Setup
 1. Clone the repository:
    ```bash
-   git clone https://github.com/ahmadaw34/Tsofen.git
+   git clone <repository-url>
+   cd <repository-folder>
    ```
 
 2. Update `Domains.json` with valid email domains if needed.
