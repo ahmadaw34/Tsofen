@@ -3,7 +3,7 @@ from compare_source_target import CompareSourceTarget
 if __name__ == '__main__':
     try:
         # These parameters are sent from user. can also be sent as paramsters to the python file.
-        addresses_to_send_report = 'ahmadaw@post.bgu.ac.il,briq@post.bgu.ac.il'
+        addresses_to_send_report = '.....@post.bgu.ac.il,.....@post.bgu.ac.il'
         version_file_name='json_file.json'
         send_email=True
         ###############################################################

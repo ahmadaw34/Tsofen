@@ -28,7 +28,7 @@ class Job:
         self.__invalid_emails = []
         self.__domains_json='Domains.json'
         self.__domains_dict = None
-        self.__email_sender='awawdy.ahmad@gmail.com'
+        self.__email_sender='...@gmail.com'
         self.__password = 'sbgg wwwp ovft chsc' #this password will be hidden in the future
 
     def _prerequisite(self):

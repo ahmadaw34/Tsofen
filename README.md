@@ -64,12 +64,6 @@ python main.py
 - `version_file_name`: JSON file containing source and target versions.
 - `send_email`: Boolean flag to enable/disable sending summarization emails.
 
-Example:
-```python
-addresses_to_send_report = 'ahmadaw@post.bgu.ac.il,briq@post.bgu.ac.il'
-version_file_name='json_file.json'
-send_email=True
-```
 
 ---
 

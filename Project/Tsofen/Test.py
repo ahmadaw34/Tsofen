@@ -8,7 +8,7 @@ class TestCompareSourceTarget(unittest.TestCase):
         test case to check run with valid emails and equal versions
         """
         # These parameters are sent from user. can also be sent as paramsters to the python file.
-        self.addresses_to_send_report = 'ahmadaw@post.bgu.ac.il,briq@post.bgu.ac.il'
+        self.addresses_to_send_report = '......@post.bgu.ac.il,.........@post.bgu.ac.il'
         self.version_file_name='json_file.json'
         self.send_email=True
         ###############################################################
@@ -22,7 +22,7 @@ class TestCompareSourceTarget(unittest.TestCase):
         """
         test case to check run with valid emails and unequal versions
         """
-        self.addresses_to_send_report = 'ahmadaw@post.bgu.ac.il,briq@post.bgu.ac.il'
+        self.addresses_to_send_report = '..........@post.bgu.ac.il,...........@post.bgu.ac.il'
         self.version_file_name='unequal_versions.json'
         self.send_email=True
         self.CompareClass = CompareSourceTarget(email_addresses=self.addresses_to_send_report, 
@@ -60,7 +60,7 @@ class TestCompareSourceTarget(unittest.TestCase):
         """
         test case to check run with valid emails and bad version format
         """
-        self.addresses_to_send_report = 'ahmadaw@post.bgu.ac.il,briq@post.bgu.ac.il'
+        self.addresses_to_send_report = '.........@post.bgu.ac.il,......@post.bgu.ac.il'
         self.version_file_name='bad_version_format.json'
         self.send_email=True
         self.CompareClass = CompareSourceTarget(email_addresses=self.addresses_to_send_report, 
